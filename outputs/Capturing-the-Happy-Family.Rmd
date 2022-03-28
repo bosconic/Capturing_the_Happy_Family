@@ -1,0 +1,260 @@
+---
+title: "Capturing the Happy Family"
+author: "Nicholas Bosco, Elizabeth Tong, Benner Feng"
+thanks: "Code and data are available at: https://github.com/bosconic/Capturing_the_Happy_Family."
+date: "`r format(Sys.time(), '%d %B %Y')`"
+abstract: "We are looking at different family factors to see if there is a correlation between the families of Canada. With the help of the GSS Cycle 31 (@citegss) survey, we can get a snapshot of the  2017 family cycle, just to shed light on the most recent data on families in the country. This data is also helpful in pinpointing some trends that the government might have overlooked. There is also a survey of additional questions we thought to ask people about what they considered when starting a family."
+output: 
+  bookdown::pdf_document2
+toc: FALSE
+bibliography: Bibliography.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+>  *All happy families resemble one another; every unhappy family is unhappy in its own way.*
+>   
+>  -Tolstoy, *Anna Karenina*
+
+Finding a silver lining among different families may be a daunting task. Each family has a different dynamic and was formed for various reasons/circumstances. However, the reward for being a part of a family makes all of the stress and unhappiness worth it. When trying to plan a family, many factors go into play. Using the data collected by the GSS Family cycle in 2017, we can begin to track the family dynamics within Canada. We can try to create a compelling narrative to what is entailed for the future individuals who decide to start a family in Canada. Our sole focus is on fertility, by looking into the factors of fertility, among starting families we can begin to speak about a new generation of Canadians who are born and raised in Canada. Keeping track of Canadian families makes understanding the underpinnings of Canadian life easier to trace rather than look at people at an individual level. We can now look at groups of families. 
+
+What was found is that families are related to each other in many ways from an abstract group level but the inner details of the individuals within the families differ greatly. The graphs and tables generated go into some eye opening statistics on the families and the trends found among the families who chose to complete the survey. By capturing the new wave of Canadians making their mark on the country this can open the door to the idea of shared experience among families across the country, and that in itself builds a whole new sense of belonging even during the most stressful yet rewarding time of them all, and that is starting a family.
+
+We have the data from the GSS survey on these families, but there are no connections between the different columns. To remedy this problem, we had decided to generate a narrative of some of the determinants around fertility (Family Planning); these determinants include income, education and sex. With this narrative spearheading our analysis on Canadian families, we can begin to provide the government with important information on the future of Canadian families. The research done here can also help the people with information about the factors involved with family planning to see if it aligns with their own family goals.
+
+
+
+```{r library, echo=FALSE, message=FALSE}
+library(tidyverse)
+library(janitor)
+library(ggplot2)
+library(modelsummary)
+library(knitr)
+library(lubridate)
+library(lattice)
+library(ggcharts)
+
+```
+``
+```{r readingdata, echo=FALSE}
+gss <- read.csv("gss.csv")
+```
+
+
+```{r incomeresp, echo=FALSE, include=FALSE}
+sum <-
+  select(gss, "income_respondent")
+datasummary_skim(sum, type = "categorical")
+```
+
+
+```{r male, echo=FALSE, include=FALSE}
+gss %>% 
+  filter(sex=="Male")
+```
+
+
+
+
+```{r feelingstowardlife, echo=FALSE, include=FALSE}
+mf <- 
+  gss %>% select('sex','feelings_life')
+mf
+```
+
+```{r sexsplit, echo=FALSE, include=FALSE}
+m <- mf %>% 
+  filter(sex == "Male")
+summary(m)
+f<- mf %>% 
+  filter(sex == "Female")
+summary(f)
+```
+
+
+
+
+```{r filterbirthintention, echo=FALSE, include=FALSE}
+birthintention <- gss$number_total_children_intention
+female <- gss %>% filter(sex=="Female")
+birthfemale <- female$number_total_children_intention
+male <- gss %>% filter(sex=="Male")
+birthmale <- male$number_total_children_intention
+```
+
+```{r birthgenderintentionmean, echo=FALSE, include=FALSE}
+Total_Kids_desire <- mean(birthintention, na.rm = TRUE)
+Female_Kids_desire <- mean(birthfemale,na.rm = TRUE)
+Male_Kids_desire <- mean(birthmale,na.rm = TRUE)
+```
+
+
+
+
+```{r filterregion, echo=FALSE, include=FALSE}
+ ontario <- gss %>% filter(region == "Ontario")
+ quebec <- gss %>% filter(region == "Quebec")
+ prairie <- gss %>% filter(region == "Prairie region")
+ atlantic <- gss %>% filter(region == "Atlantic region")
+ bc <- gss %>% filter(region =="British Columbia")
+```
+
+
+```{r meanchildrenintention, echo=FALSE, include=FALSE}
+o <-  mean(ontario$number_total_children_intention, na.rm = TRUE)
+q <-  mean(quebec$number_total_children_intention, na.rm = TRUE)
+p <-  mean(prairie$number_total_children_intention, na.rm = TRUE)
+a <-  mean(atlantic$number_total_children_intention, na.rm = TRUE)
+b <- mean(bc$number_total_children_intention, na.rm = TRUE)
+```
+
+```{r tibble, echo=FALSE, include=FALSE}
+tibble(o,q,p,a,b)
+```
+
+
+
+```{r birthwillingness, echo=FALSE}
+birthfutureFemale <- gss %>% filter(sex=="Female",age %in% (15:45))
+
+#birthwillingness <- birthfuture[!is.na(birthfuture)]
+#birthwillingness
+```
+
+# Data
+
+## Key Features
+
+The Family Cycle survey uses families as a bellwether to track the overall conditions of living within the country. By placing our attention on families we can begin to forecast many aspects of life in Canada(@citegss). This survey was conducted in 2017, but the data was released in 2019. This survey data has 20,602 respondents and 81 variables. Some of the categories from this survey we choose to focus on are the intersections of income, education and fertility and how it all is at the root of the Canadian Family. The data you see here was prepared and shared using the statistical programming language R (@citer). In conjunction with the R to prepare our analysis we also used the ‘tidyverse’ as the main library for our resources (@citetidyverse).
+
+
+## Sources and Methodologies
+
+We are looking at different family factors to see if there is a correlation between the families of Canada. With the help of the GSS Cycle 31 (@citegss) survey, we can get a snapshot of the  2017 family cycle, just to shed light on the most recent data on families in the country. This data is also helpful in pinpointing some trends that the government might have overlooked. There is also a survey of additional questions we thought to ask people about what they considered when starting a family. This data was made avaliable in 2019 even though the survey was conducted in 2017.
+
+We gathered all data to produce our findings of the most recent insights on family dynamics within Canada. From the survey website, we gathered this crucial information:
+“This survey was completely voluntary and the data is collected through the computer-assisted telephone interviewing method directly from the respondents“ (@citegss). The overall response rate is 52.4% from the volunteers (@citegss). 
+
+
+As per data collection, the website mentioned a combination of randomization and sampling to get a fair and robust picture of the Canadian population(@citegss). This is important to point out that some families are more present in different regions than others. The survey also tries to look at families within Canada's ten provinces, but the respondents are aged 15 years and older.
+
+This survey is collected every five years. The family cycle survey results we gathered from the survey at this time will also affect how we interpret the current and emerging families within Canada. The survey is collected every five years because there is not much change in family dynamics over year increments, so five years is a good fit. It was also drawn to our attention that the following survey is set to occur in 2022.
+
+The GSS family survey has played a role in the Canadian general social survey since 1984, but it was not until 1990 that the family cycle had its separate category. Although each cycle, the questions asked and the data collected change every so slightly, in the case of the most recent cycle, we are looking at a change that was made to make a note of was the combination of survey data and tax data from the respondents.
+
+“In 2017, personal income questions were not asked as part of the survey. Income information was obtained instead through a linkage to tax data for respondents who did not object to this linkage. Linking to tax data diminishes respondent burden and increases data quality both in terms of accuracy and response rates.” (@citegss1) This would prove valuable because the survey is trying to move beyond personal income. After all, the self-reporting of income may differ from what is mentioned within tax data, and respondents may become afraid about their information being traced back to them if a false report was made.
+
+Family Cycle Data (Cycle 31) was retrieved from Statistics Canada and initially cleaned by Rohan Alexander and Sam Caetano. We then proceeded to use this data and continue to cook with it.
+
+
+## Strengths and Weaknesses
+
+The data collected has a solid understanding of the more complicated family dynamics like: “childcare services, childcare arrangements, child custody and financial support, and programs used after a separation or a divorce”(@citegss1). We felt this was a significant change as it also has lots to say about the current relationship trends with an uptake on divorce and common-law living (@citemarriagecan). 
+
+A tremendous strong point this survey edition highlighted while reading the many variables is the addition of many columns on immigrant and minority groups as a way to capture Canadian Families. It is best to see all types of families because Canada is a multicultural nation. It makes Canada unique as it is trying to be more open with this shift toward multiculturalism.
+
+As for the weaknesses or shortcomings this survey had was the feelings toward life, as we see the intention the government is trying to do here. However, the actual way the answers were provided for the respondents was a bit vague as it is pretty tough to quantify how unhappy someone can be. We had discussed the difference between an unhappiness rating of ‘2’ versus an unhappiness rating of ‘3’, which leaves it to some contention.
+
+Another weakness picked up from this survey was the worked last week column. We did not understand what relevance knowing that answer would do to enhance this survey. As the responses from this survey were: “Yes,” “No,” and “Don’t Know,” the answers themselves were not very descriptive.
+
+
+## Ethical Concerns
+
+Some of the ethical concerns noticed from the survey were excluding the three provinces. The data only focuses on the ten provinces, but this was a bit worrisome as there are families within the territories that are not being appropriately represented. Another ethical concern is the answers for “birth country” and “partner birth country”; the responses to these questions were either Canada or a country outside Canada. If the purpose of this survey is to capture the family makeup of Canada, would it not be beneficial to input the country you or your Significant other came from? As it could open the door into a more detailed look into families.
+Nevertheless, we recognize that this request may be met with some backlash as it is information that can be self-identifying, causing some privacy issues. A final ethical concern that needs to be addressed about this survey is the lack of representation for the institutionalized couples. Just because the significant other is institutionalized does not mean the person is not a part of the family. Even though the group of institutionalized individuals may be small, there is still a missing gap. However, the survey asks the respondents for self-rated health and self-rated mental health.
+
+# Results
+
+```{r familyincome, fig.cap="Regional income per family", echo=FALSE}
+gss %>% 
+  ggplot(mapping = aes(x=income_family)) +
+  geom_bar(position = "dodge") +
+  facet_wrap(~ region)+
+  coord_flip()+
+  labs(x = "Population",
+  y = "Family Income",
+  title = "Family Income Level in Different Regions of Canada",
+  caption = "Source: Canadian General Social Survey Family Cycle 31 2017"  )
+```
+Figure \@ref(fig:familyincome) looks at the family income count per region. This is important to look at for several reasons. Firstly it gives some insight on how the family income distribution looks like between regions. Secondly, the way the regions were chosen also is quite fascinating as there are some ‘regions’ with one province, like Ontario and Quebec, and British columbia. Then there are the regions with more than one province like the prairies and Atlantic regions. What this alludes to is the fact that most families within Canada live among the three individual provinces/regions compared to the Prairies and Atlantic regions.
+
+As for the data within the faceted graphs* (we should also mention we flipped the x and y axis to fit the values properly as it makes the data easier to interpret), in most of the families asked from 3 out of the 5 (Ontario, Prairies and British columbia) regions the highest family income range ($125,000 and more) had the highest count of families. The Quebec region and Atlantic region had the highest number of families within the lowest income family range ($25,000 to $49,000) had the highest count. What we can conclude with this data is that maybe families within the different regions cost more or less to maintain. But this does not look into the factors of the total household size which would be the next thing we would build upon this data.
+
+
+```{r house, fig.cap="House Hold Size in Different Regions of Canada", echo=FALSE}
+gss%>% 
+  ggplot(mapping = aes(x=hh_size)) +
+  geom_bar(position = "dodge") +
+  facet_grid(~ region)+
+  labs(x = "House Hold Size",
+  y = "Population",
+  title = "House Hold Size in Different Regions of Canada",
+  caption = "Source: Canadian General Social Survey Family Cycle 31 2017")
+```
+Figure \@ref(fig:house) shows that all five regions in Canada follow the same pattern, even though they have different counts of total households: one- and two-person households make up the majority of each region. In addition, there are two steep drops in numbers when the household size exceeds two and exceeds four in all regions. In the Atlantic region and Quebec, for a household size larger than two-person, the bigger the household is, the smaller the proportion it occupies. In the British Columbia and Prairie region, however, the three- and four-person households share nearly the same proportion of the total count of households. Ontario is the only region that has more four-person than three-person households. 
+
+
+```{r wantkids, fig.cap='Average desire for children', echo=FALSE, include=TRUE}
+KD <- tibble(Total_Kids_desire,Female_Kids_desire,Male_Kids_desire)
+KD
+```
+Table \@ref(tab:wantkids) indicates that the average number of children that people intend to have (0.90) in Canada is less than 1, and when we break it down by the sex of respondents, the males (0.99) in Canada tend to want more children than females (0.82) do. The number of children that males want to have is nearly around 1, which is higher than the national average, while the average number of children females want to have is lower than the national average. 
+
+
+
+```{r avgdesire, fig.cap='Regional desire for kids', echo=FALSE, include=TRUE}
+tab <- matrix(c(0.9305673, 1.020716, 0.9363021, 0.7421272,0.8582996), ncol=1, nrow = 5, byrow=FALSE)
+colnames(tab) <- c('Average Number of Children Desired By Region')
+rownames(tab) <- c('Ontario','Quebec','Prairie','Atlantic','BC')
+tab <- as.table(tab)
+tab
+```
+From Table \@ref(tab:avgdesire) we can see that Quebec (1.021) has the highest number of children that people intend to have in the future, followed by Prairie (0.936) and Ontario (0.931). People in the Atlantic region want the least number of children in the future. As the number of desired children increases, it indicates the greater chance more than one kid is expected within the family. If the number of desired kids is less than one, it indicates less of a desire to have kids. However, while looking at the table, you should note that all regions have a number that converges near one. The convergence at one can lead to the hope that all families who completed the survey all know what to start a family with one child at most.
+
+
+
+```{r pie, fig.cap='Female willingness to bare children', echo=FALSE}
+# thanks stack overflow for this rounding code. https://stackoverflow.com/questions/50365409/rounding-off-percentages-in-plotly-pie-charts
+
+pie1 <- table(birthfutureFemale$future_children_intention)
+datapie1<- data.frame(pie1)
+woftgbif <- datapie1[,2]
+piepercent = paste(round((woftgbif / sum(woftgbif))*100, 2))
+pie(pie1,radius = 1,labels=piepercent,clockwise=FALSE,main = "Female Willingness To Give Birth" ,col=rainbow(length(woftgbif)))#the data collected is from 15 to 45 years old, shown as percentage
+legend("left", c("Definitely, yes","No, definitely not","Probably not","Probably yes","Unsure"), cex = 0.8,
+   fill = rainbow(length(woftgbif)))
+```
+Figure \@ref(fig:pie) demonstrates the willingness to give birth to children of all women of childbearing age who participated in the GSS. However, it is clear that more than half of the females of childbearing age do not intend to have children, and only a few of them are particular about giving birth to children in the future. Around a quarter and a half of the females expressed their uncertainties, yet females who tend not to have children are still the majority. 
+
+
+# Discussion
+Research showed that there is a long-term trend toward smaller households in developed countries, "with increasing proportions of one- and two-person households in the total" (@citestrucure). From the figure shown in the above section, it is apparent that Canada, along with all of its regions, follows this pattern since one- and two-person households make up the majority of the total number of households of each region, no matter how many households each region has. The shrink of household size is affected by several socio-economic factors, such as "higher level of education, health outcomes, the extent of inequality, and urbanization" (@citetripathi). What cannot be overlooked is the country's fertility rate because the number of children born has a direct impact on the size of the households. 
+According to [@citedribe], farmers' families have the highest net fertility rate in North America, which explains why the Prairie region as the agricultural center of Canada has the second-highest fertility intention. Quebec is a particular case–the dominant religion there is Catholics. Since Catholics are against abortion, the number of children wanted in that area is the highest. On the other hand, the Atlantic region has the most significant proportion of people who earn less than $50,000 a year. This might affect the fertility rate in the Atlantic region because the cost of raising children is too high for those households, given the majority size of the households in that region are one- and two-person.
+Females' willingness to give birth to children, especially women of childbearing age, have tremendous impacts on the fertility rate. Therefore, looking at the pattern of childbearing-age women's willingness to have children in the future enables people to foresee the decrease or increase of the fertility rate of future generations. Moreover, it reflects the socio-economic status of a specific region since a female's fertility intentions are not only correlated to personal household factors but are also closely related to social, economic, and political reasons (e.g., government subsidies, glass ceiling in the career, etc.).
+
+# Appendix
+
+## Additional Survey
+
+Attached is our additional survey to really answer the questions left unanswered:
+
+https://forms.gle/hm7YQEWv4NcFW8xM6
+
+
+\newpage
+
+
+![](inputs/survey1.jpg)
+![](inputs/survey2.jpg)
+![](inputs/survey3.jpg)
+![](inputs/survey4.jpg)
+
+
+\newpage
+
+
+# References
