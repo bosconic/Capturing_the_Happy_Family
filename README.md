@@ -10,7 +10,7 @@ To access the data you have to have access to the CHASS website and follow these
 3) What you want once you enter the data base is the Canadian (GSS) Surveys
 4) Once choosen the proper survey you need to download the CSV, dictionary and label files seperately
 5) At this point you should have access to the data, and now you can use the starter code provided in scripts as a guide. 
-        **STARTER CODE WAS GRACIOUSLY GIVEN TO US BY ROHAN, WHO HAD CREATED THE CODE WITH HIS COLLEGUE SAM** 
+        **STARTER CODE WAS GRACIOUSLY GIVEN TO US BY ROHAN, WHO HAD CREATED THE CODE WITH HIS COLLEAGUE SAM** 
 6) At this point you should be elbow deep in code its okay no need to panic just take one step at a time
 
 
